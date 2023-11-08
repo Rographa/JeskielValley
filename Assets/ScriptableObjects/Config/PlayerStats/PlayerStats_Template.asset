@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0bd47992e8294d0f954b6fdc2966814c, type: 3}
   m_Name: PlayerStats_Template
   m_EditorClassIdentifier: 
-  moveSpeed: 800
+  moveSpeed: 1200
   diagonalMovementMultiplier: 0.75
-  sprintSpeedMultiplier: 1.8
+  sprintSpeedMultiplier: 2.1
   maxStamina: 100
   staminaRegenPerSecond: 5
   sprintStaminaCostPerSecond: 10
