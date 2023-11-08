@@ -80,17 +80,23 @@ namespace Items
         
         public List<int> GetKeyframeListByDirection(Vector2 direction)
         {
+            if (direction.y <= -1) return downKeyframes;
+
             return direction.x switch
             {
                 >= 1 => rightKeyframes,
                 <= -1 => leftKeyframes,
-                _ => direction.y >= 1 ? upKeyframes : downKeyframes
+                _ => upKeyframes
             };
         }
 
         public Sprite GetSprite(int index, Vector2 direction)
         {
             var list = GetKeyframeListByDirection(direction);
+            if (index >= list.Count)
+            {
+                index = Mathf.Clamp(index % list.Count, 0, list.Count - 1);
+            }
             return allSprites[list[index]];
         }
 

@@ -10,8 +10,8 @@ namespace Player
     public class PlayerAnimation : MonoBehaviour
     {
         public event Action<Enums.AnimationStates> OnAnimationStateChanged;
-        public event Action<int, Vector2> OnSpriteChanged;
-        
+        public event Action<Enums.AnimationStates, int, Vector2> OnSpriteChanged;
+
         [SerializeField] private Animator anim;
         [SerializeField] private SpriteRenderer spriteRenderer;
         [SerializeField] private PlayerAnimationConfig playerAnimationConfig;
@@ -26,16 +26,18 @@ namespace Player
         private Vector2 CurrentDirection => new Vector2(anim.GetFloat(DirX), anim.GetFloat(DirY));
         private static int DirX => Animator.StringToHash("DirX");
         private static int DirY => Animator.StringToHash("DirY");
-        
+
         private int CurrentSpeed => Animator.StringToHash("CurrentSpeed");
 
         private PlayerController _playerController;
+
         public void Init(PlayerController controller)
         {
             _playerController = controller;
             Subscribe();
             SetupEquipmentComponents();
-            StartCoroutine(CheckAnimationState());
+            //StartCoroutine(CheckAnimationState());
+            StartCoroutine(WaitForSpriteChanges());
         }
 
         private void SetupEquipmentComponents()
@@ -48,46 +50,70 @@ namespace Player
 
             foreach (var equipmentComponent in _equipmentComponents)
             {
-                equipmentComponent.Init(this);
+                equipmentComponent.Init();
             }
         }
 
         private void LateUpdate()
         {
             UpdateAnimations();
-            CheckSpriteChanges();
+            CheckAnimationState();
+            
         }
 
         private void CheckSpriteChanges()
         {
-            if (_lastSprite == spriteRenderer.sprite) return;
-
             _lastSprite = spriteRenderer.sprite;
             var index = playerAnimationConfig.GetIndex(CurrentState, _lastSprite, CurrentDirection);
-            OnSpriteChanged?.Invoke(index, CurrentDirection);
+            UpdateEquipmentAnimations(index);
+            OnSpriteChanged?.Invoke(CurrentState, index, CurrentDirection);
         }
 
-        private IEnumerator CheckAnimationState()
+        private void UpdateEquipmentAnimations(int index)
         {
-            SetupAnimationStateNames();
-            _currentStateName = animationStateNames.FirstOrDefault().ToString();
+            foreach (var equipmentComponent in _equipmentComponents)
+            {
+                equipmentComponent.UpdateInfo(CurrentState, index, CurrentDirection);
+            }
+        }
+
+        private IEnumerator WaitForSpriteChanges()
+        {
+            var endOfFrame = new WaitForEndOfFrame();
+            yield return endOfFrame;
             while (true)
             {
-                yield return new WaitUntil(() => !anim.GetCurrentAnimatorStateInfo(0).IsName(_currentStateName));
-                var stateInfo = anim.GetCurrentAnimatorStateInfo(0);
-                foreach (var stateName in animationStateNames)
-                {
-                    if (_currentStateName == stateName) continue;
-                    if (stateInfo.IsName(stateName))
-                    {
-                        _currentStateName = stateName;
-                    }
-                }
-                
-                Debug.Log($"New animation state.{_currentStateName}");
-                OnAnimationStateChanged?.Invoke(CurrentState);
-                yield return new WaitForEndOfFrame();
+                yield return new WaitUntil(() => _lastSprite != spriteRenderer.sprite);
+                CheckSpriteChanges();
+                yield return endOfFrame;
             }
+        }
+
+        private void CheckAnimationState()
+        {
+            if (animationStateNames == null || animationStateNames.Count == 0)
+            {
+                SetupAnimationStateNames();
+            }
+
+            if (!HasSwitchedStates()) return;
+            
+            var stateInfo = anim.GetCurrentAnimatorStateInfo(0);
+            foreach (var stateName in animationStateNames)
+            {
+                if (_currentStateName == stateName) continue;
+                if (stateInfo.IsName(stateName))
+                {
+                    _currentStateName = stateName;
+                    break;
+                }
+            }
+            OnAnimationStateChanged?.Invoke(CurrentState);
+        }
+
+        private bool HasSwitchedStates()
+        {
+            return !anim.GetCurrentAnimatorStateInfo(0).IsName(_currentStateName);
         }
 
         private void SetupAnimationStateNames()
@@ -99,6 +125,8 @@ namespace Player
                 if (stateName == "None") continue;
                 animationStateNames.Add(stateName);
             }
+
+            _currentStateName = animationStateNames.FirstOrDefault()?.ToString();
         }
 
         private void UpdateAnimations()

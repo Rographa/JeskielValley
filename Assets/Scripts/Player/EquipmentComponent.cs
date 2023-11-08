@@ -15,7 +15,6 @@ namespace Player
         [SerializeField] private ItemData preEquippedItem;
 
         private SpriteRenderer _spriteRenderer;
-        private List<Sprite> _currentAnimationCycle;
         private ItemData _currentItem;
         private Vector2 _currentDirection;
         private PlayerAnimation _playerAnimation;
@@ -27,11 +26,9 @@ namespace Player
             _spriteRenderer = GetComponent<SpriteRenderer>();
         }
 
-        public void Init(PlayerAnimation playerAnimation)
+        public void Init()
         {
-            _playerAnimation = playerAnimation;
             SetupInitialValues();
-            Subscribe();
             EquipItem(preEquippedItem);
         }
 
@@ -39,52 +36,7 @@ namespace Player
         {
             _currentDirection = Vector2.down;
             _currentState = Enums.AnimationStates.Idle;
-            _currentAnimationCycle = new();
         }
-
-        private void Subscribe()
-        {
-            _playerAnimation.OnAnimationStateChanged += OnAnimationStateChanged;
-            _playerAnimation.OnSpriteChanged += OnSpriteChanged;
-        }
-
-        private void OnAnimationStateChanged(Enums.AnimationStates state)
-        {
-            if (_currentItem == null) return;
-            _currentState = state;
-            UpdateAnimationCycle();
-        }
-
-        private void OnDirectionChanged()
-        {
-            if (_currentItem == null) return;
-            _spriteIndex = 0;
-            UpdateAnimationCycle();
-        }
-
-        private void UpdateAnimationCycle()
-        {
-            if (_currentItem == null) return;
-            _currentAnimationCycle =
-                _currentItem.itemVisuals.GetItemAnimationData(_currentState).GetSpriteList(_currentDirection);
-        }
-
-        private void OnSpriteChanged(int index, Vector2 direction)
-        {
-            if (_currentItem == null || index == -1) return;
-
-            if (_currentDirection != direction)
-            {
-                _currentDirection = direction;
-                OnDirectionChanged();
-            }
-
-            _spriteIndex = index;
-            if (_currentAnimationCycle.Count <= _spriteIndex)
-                UpdateAnimationCycle();
-            SetCurrentSprite(_currentAnimationCycle[_spriteIndex]);
-        }
-
         private void SetCurrentSprite(Sprite sprite)
         {
             _spriteRenderer.sprite = sprite;
@@ -101,20 +53,29 @@ namespace Player
             if (item.itemType != itemType) return;
 
             _currentItem = item;
-            LoadItemVisuals();
-        }
-
-        private void LoadItemVisuals()
-        {
             _currentItem.LoadVisuals();
-            UpdateAnimationCycle();
         }
 
         private void Unequip()
         {
             _currentItem = null;
-            _currentAnimationCycle.Clear();
             SetCurrentSprite(null);
+        }
+
+        public void UpdateInfo(Enums.AnimationStates currentState, int index, Vector2 currentDirection)
+        {
+            if (_currentItem == null) return;
+            
+            _currentState = currentState;
+            _spriteIndex = index == -1 ? _spriteIndex + 1 : index;
+            _currentDirection = currentDirection;
+
+            UpdateVisuals();
+        }
+
+        private void UpdateVisuals()
+        {
+            SetCurrentSprite(_currentItem.GetCurrentSprite(_currentState, _spriteIndex, _currentDirection));
         }
     }
 }

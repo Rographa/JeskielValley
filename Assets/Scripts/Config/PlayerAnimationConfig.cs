@@ -18,7 +18,8 @@ namespace Config
         {
             var stateData = GetStateData(state);
             var sprites = stateData.GetSpritesByDirection(currentDirection);
-            return sprites.FindIndex(s => s.name == currentSprite.name);
+            //return sprites.FindIndex(s => s.name == currentSprite.name);
+            return sprites.IndexOf(currentSprite);
         }
 
         
@@ -35,11 +36,13 @@ namespace Config
         
         public List<Sprite> GetSpritesByDirection(Vector2 direction)
         {
+            if (direction.y <= -1) return downSprites;
+
             return direction.x switch
             {
                 >= 1 => rightSprites,
                 <= -1 => leftSprites,
-                _ => direction.y >= 1 ? upSprites : downSprites
+                _ => upSprites
             };
         }
 
