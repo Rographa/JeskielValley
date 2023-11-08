@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 839cda864acc43e3bfbd655f17d07baa, type: 3}
+  m_Name: UserInput_Template
+  m_EditorClassIdentifier: 
+  userInputs:
+  - playerAction: 1
+    mainKey: 97
+    alternativeKey: 276
+  - playerAction: 2
+    mainKey: 100
+    alternativeKey: 275
+  - playerAction: 3
+    mainKey: 119
+    alternativeKey: 273
+  - playerAction: 4
+    mainKey: 115
+    alternativeKey: 274
+  - playerAction: 5
+    mainKey: 304
+    alternativeKey: 0
+  - playerAction: 6
+    mainKey: 101
+    alternativeKey: 324
