@@ -15,6 +15,7 @@ namespace Player
         
         [SerializeField] private PlayerStatsConfig baseStats;
         [SerializeField] private PlayerAnimation playerAnimation;
+        [SerializeField] private PlayerCollision playerCollision;
         [SerializeField] private Rigidbody2D rb;
 
         private Dictionary<PlayerAction, bool> _pressedInputs = new();
@@ -50,6 +51,7 @@ namespace Player
         {
             SetupStats();
             playerAnimation.Init(this);
+            playerCollision.Init(baseStats);
             StartCoroutine(MoveRoutine());
         }
 
@@ -195,6 +197,28 @@ namespace Player
         {
             if (!_pressedInputs.TryAdd(input, false))
                 _pressedInputs[input] = false;
+
+            switch (input)
+            {
+                case PlayerAction.Interact:
+                    TryInteract();
+                    break;
+                case PlayerAction.None:
+                case PlayerAction.MoveLeft:
+                case PlayerAction.MoveRight:
+                case PlayerAction.MoveUp:
+                case PlayerAction.MoveDown:
+                case PlayerAction.Sprint:
+                case PlayerAction.Jump:
+                case PlayerAction.Inventory:
+                default:
+                    break;
+            }
+        }
+
+        private void TryInteract()
+        {
+            playerCollision.GetInteractable()?.Interact();
         }
 
         public void Equip(ItemData itemData)

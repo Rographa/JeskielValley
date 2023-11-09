@@ -8,11 +8,13 @@ namespace PlayerSaveData
     {
         public int currentCurrency;
         public List<string> obtainedItems;
+        public int totalCropValue;
 
         public SaveData()
         {
             currentCurrency = 0;
             obtainedItems = new();
+            totalCropValue = 0;
         }
 
         public void UpdateCurrency(int amount)
@@ -25,10 +27,20 @@ namespace PlayerSaveData
             obtainedItems.Add(itemId);
         }
 
+        public void CollectCrop(int value)
+        {
+            totalCropValue += value;
+        }
+
         public void RemoveItem(string itemId)
         {
             if (!obtainedItems.Contains(itemId)) return;
             obtainedItems.Remove(itemId);
+        }
+
+        public void ResetCropValue()
+        {
+            totalCropValue = 0;
         }
     }
 }

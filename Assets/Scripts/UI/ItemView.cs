@@ -3,6 +3,7 @@ using Items;
 using Managers;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 using Utilities;
 
@@ -33,17 +34,19 @@ namespace UI
 
         private static Sprite _lockedSprite;
 
-        public Action<ItemData> OnSelected;
+        public ItemData ItemData => _itemData;
+        public Action<ItemView, ItemData> OnSelected;
         public bool isSelected;
         public bool isHovered;
         public bool isLocked;
-        
+        public bool skipLockCheck;
+
         [SerializeField] private PointerImageInteractionData pointerImageInteractionData;
         [SerializeField] private Image itemIconImage;
 
         private bool _isNone;
         private ItemData _itemData;
-        private string _itemId;
+        public string itemId;
 
         public void Disable()
         {
@@ -52,13 +55,13 @@ namespace UI
 
         public void SetItem(string itemId)
         {
-            _itemId = itemId;
+            this.itemId = itemId;
             SetItemData();
         }
 
         public void SetItem(ItemData item)
         {
-            _itemId = item.itemId;
+            itemId = item.itemId;
             SetItemData(item);
         }
 
@@ -83,7 +86,9 @@ namespace UI
 
         private void CheckLock()
         {
-            isLocked = !InventoryManager.HasItem(_itemId);
+            if (skipLockCheck) return;
+            
+            isLocked = !InventoryManager.HasItem(itemId);
 
             if (isLocked)
             {
@@ -117,7 +122,7 @@ namespace UI
         public void OnPointerClick(PointerEventData eventData)
         {
             if (isLocked) return;
-            OnSelected?.Invoke(_itemData);
+            OnSelected?.Invoke(this, _itemData);
         }
 
         public void OnPointerEnter(PointerEventData eventData)
@@ -164,7 +169,22 @@ namespace UI
                 return _isNone;
             }
             
-            return itemData.itemId == _itemId;
+            return itemData.itemId == itemId;
+        }
+
+        public void SetObtained(bool hasItem)
+        {
+            isLocked = hasItem;
+            switch (hasItem)
+            {
+                case true:
+                    pointerImageInteractionData.SetLocked();
+                    break;
+                case false:
+                    if (isHovered) pointerImageInteractionData.SetHover();
+                    else pointerImageInteractionData.SetNormal(); 
+                    break;
+            }
         }
     }
 

@@ -21,7 +21,8 @@ public enum ItemType
     None,
     Hair,
     Outfit,
-    Hat
+    Hat,
+    Crop
 }
 
 [Serializable]

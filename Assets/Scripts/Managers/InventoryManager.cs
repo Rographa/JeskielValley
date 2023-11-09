@@ -105,5 +105,10 @@ namespace Managers
                     return null;
             }
         }
+
+        public static void ObtainCrop(ItemData item)
+        {
+            GameManager.ObtainCrop(item.itemCost);
+        }
     }
 }

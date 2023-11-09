@@ -13,10 +13,13 @@ namespace UI
 {
     public class ItemTypeSection : MonoBehaviour
     {
+        public static event Action<ItemView, ItemData> OnItemViewSelected; 
+        
         private static List<ItemData> _allItems;
         private List<ItemData> _loadedItems;
         
         [SerializeField] private ItemType itemType;
+        [SerializeField] private bool isShop;
         [SerializeField] private TextMeshProUGUI titleText;
         [SerializeField] private List<ItemView> itemViewList;
 
@@ -36,9 +39,18 @@ namespace UI
         {
             LoadAllItems();
             _loadedItems = GetRelevantItems();
-            SetupAllItemViews();
+
+            if (isShop)
+            {
+                SetupAllItemViewsShopkeeper();
+                CheckObtainedItems();
+            } else
+            {
+                SetupAllItemViewsInventory();
+                CheckEquippedItems();
+                
+            }
             SetupText();
-            CheckEquippedItems();
         }
 
         private void CheckEquippedItems()
@@ -47,6 +59,15 @@ namespace UI
             foreach (var itemView in itemViewList)
             {
                 itemView.SetSelected(itemView.IsItem(item));
+            }
+        }
+        
+        private void CheckObtainedItems()
+        {
+            foreach (var itemView in itemViewList)
+            {
+                var hasItem = InventoryManager.HasItem(itemView.itemId);
+                itemView.SetObtained(hasItem);
             }
         }
 
@@ -74,7 +95,7 @@ namespace UI
             }
         }
 
-        private void SetupAllItemViews()
+        private void SetupAllItemViewsInventory()
         {
             for (var i = 0; i < itemViewList.Count; i++)
             {
@@ -83,7 +104,7 @@ namespace UI
 
                 if (i == 0)
                 {
-                    itemView.OnSelected += OnItemViewSelected;
+                    itemView.OnSelected += OnInventoryItemViewSelected;
                     itemView.SetNone();
                     _noneItemView = itemView;
                     continue;
@@ -94,13 +115,64 @@ namespace UI
                     itemView.Disable();
                     continue;
                 }
-                itemView.OnSelected += OnItemViewSelected;
+                itemView.OnSelected += OnInventoryItemViewSelected;
                 itemView.SetItem(_loadedItems[i - 1]);
             }
         }
 
+        private void SetupAllItemViewsShopkeeper()
+        {
+            for (var i = 0; i < itemViewList.Count; i++)
+            {
+                var itemView = itemViewList[i];
+                var hasItem = _loadedItems.Count > i;
+
+                if (!hasItem)
+                {
+                    itemView.Disable();
+                    continue;
+                }
+                itemView.OnSelected += OnShopkeeperItemViewSelected;
+                itemView.skipLockCheck = true;
+                itemView.SetItem(_loadedItems[i]);
+            }
+        }
+
+        public void DeselectAll()
+        {
+            foreach (var itemView in itemViewList.Where(i => i.isSelected))
+            {
+                itemView.SetSelected(false);
+            }
+
+            if (isShop)
+            {
+                CheckObtainedItems();
+            }
+            else
+            {
+                CheckEquippedItems();
+            }
+        }
+        
         [CanBeNull]
-        private void OnItemViewSelected(ItemData itemData)
+        private void OnShopkeeperItemViewSelected(ItemView itemView, ItemData itemData)
+        {
+            OnItemViewSelected?.Invoke(itemView, itemData);
+            if (itemData == null)
+            {
+                InventoryManager.Unequip(itemType);
+            }
+            else
+            {
+                InventoryManager.Equip(itemData);
+            }
+
+            CheckEquippedItems();
+        }
+
+        [CanBeNull]
+        private void OnInventoryItemViewSelected(ItemView itemView, ItemData itemData)
         {
             if (itemData == null)
             {

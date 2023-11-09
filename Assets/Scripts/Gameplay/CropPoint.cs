@@ -1,11 +1,16 @@
+using System;
 using Interfaces;
 using Managers;
 using UnityEngine;
+using Utilities;
+using Random = UnityEngine.Random;
 
 namespace Gameplay
 {
     public class CropPoint : MonoBehaviour, IInteractable
     {
+        [SerializeField] private SpriteRenderer cropSpriteRenderer;
+        
         private CropData _currentCropData;
         private CropStage _currentStage;
         private int _currentStageIndex;
@@ -38,22 +43,30 @@ namespace Gameplay
                 SetCropReady();
                 return;
             }
-
-            _currentStage = _currentCropData.stages[_currentStageIndex];
+            SetStage();
         }
 
         private void SetCropReady()
         {
             _isReady = true;
+            cropSpriteRenderer.sprite = _currentCropData.finalStageSprite;
         }
 
-        public void Plant(CropData cropData)
+        private void SetStage()
         {
-            _currentCropData = Instantiate(cropData);
+            _currentStage = _currentCropData.stages[_currentStageIndex];
+            cropSpriteRenderer.sprite = _currentStage.cropSprite;
+        }
+
+        public void Plant(CropType cropType)
+        {
+            var endpoint = GlobalVariables.CropDataResourcesEndpoint + Enum.GetName(typeof(CropType), cropType);
+            _currentCropData = Instantiate(Resources.Load<CropData>(endpoint));
             _currentStageIndex = 0;
             _progress = 0;
-            _currentStage = _currentCropData.stages[_currentStageIndex];
             _maxStage = _currentCropData.stages.Count - 1;
+            SetStage();
+            _isActive = true;
         }
 
         public void Interact()
@@ -61,22 +74,42 @@ namespace Gameplay
             if (_isReady)
             {
                 Harvest();
+                return;
+            }
+            if (!_isActive)
+            {
+                var newCrop = Random.value > 0.5f ? CropType.Potato : CropType.Tomato;
+                Plant(newCrop);
             }
         }
 
         private void Harvest()
         {
-            
+            var pos = cropSpriteRenderer.transform.position;
+            CropManager.GenerateCollectableCrop(_currentCropData, _quality, pos);
+
+            cropSpriteRenderer.sprite = null;
+            _currentCropData = null;
+            _currentStage = null;
+            _currentStageIndex = 0;
+            _progress = 0;
+            _isActive = false;
+            _isReady = false;
         }
 
-        public void OnRangeEnter()
+        public void OnInteractionFocusEnter()
         {
-            
+            Debug.Log($"Interaction Focus Entered: {gameObject.name}");
         }
 
-        public void OnRangeExit()
+        public void OnInteractionFocusExit()
         {
-            
+            Debug.Log($"Interaction Focus Exited: {gameObject.name}");
+        }
+
+        public Vector2 GetPosition()
+        {
+            return transform.position;
         }
     }
 }

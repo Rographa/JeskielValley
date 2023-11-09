@@ -17,6 +17,9 @@ namespace Managers
         public static Action<string> OnItemObtained;
         public static Action<string> OnItemRemoved;
 
+        public static int CropValue => Instance._currentSaveData.totalCropValue;
+        public static int CurrentCurrency => Instance._currentSaveData.currentCurrency;
+
         [SerializeField] private bool autoSave = true;
         [SerializeField] private float autoSaveInterval = 60;
         private SaveData _currentSaveData;
@@ -25,6 +28,11 @@ namespace Managers
             base.Init();
             SetupSaveData();
             PlayerController = FindObjectOfType<PlayerController>();
+        }
+
+        private void OnDisable()
+        {
+            SaveLoad.Save(_currentSaveData);
         }
 
         public List<ItemData> GetObtainedItems()
@@ -59,6 +67,40 @@ namespace Managers
             {
                 yield return interval;
                 SaveLoad.Save(_currentSaveData);
+            }
+        }
+
+        public static void ObtainCrop(int value)
+        {
+            Instance._currentSaveData.CollectCrop(value);
+        }
+
+        public static void AddCurrency(int amount)
+        {
+            var total = CurrentCurrency + amount;
+            OnCurrencyChanged?.Invoke(total);
+        }
+
+        public static void SpendCurrency(int amount)
+        {
+            var total = CurrentCurrency - amount;
+            OnCurrencyChanged?.Invoke(total);
+        }
+
+        public static void SellAllCrops()
+        {
+            AddCurrency(CropValue);
+            Instance._currentSaveData.ResetCropValue();
+        }
+
+        public static void TryBuyItem(ItemData itemData)
+        {
+            if (itemData == null) return;
+            
+            if (CurrentCurrency >= itemData.itemCost)
+            {
+                SpendCurrency(itemData.itemCost);
+                OnItemObtained?.Invoke(itemData.itemId);
             }
         }
     }

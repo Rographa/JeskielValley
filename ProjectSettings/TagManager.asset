@@ -8,10 +8,10 @@ TagManager:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Player
   - Water
   - UI
-  - 
+  - Collectable
   - 
   - 
   - 
@@ -44,6 +44,9 @@ TagManager:
   - name: Background
     uniqueID: 2547447945
     locked: 0
+  - name: Crop
+    uniqueID: 4211491383
+    locked: 0
   - name: Body
     uniqueID: 2801891539
     locked: 0
@@ -55,4 +58,7 @@ TagManager:
     locked: 0
   - name: Hat
     uniqueID: 2401724565
+    locked: 0
+  - name: Collectable
+    uniqueID: 1079159619
     locked: 0

@@ -1,4 +1,5 @@
-﻿using DG.Tweening;
+﻿using System;
+using DG.Tweening;
 using UnityEngine;
 using Utilities;
 
@@ -7,26 +8,59 @@ namespace Managers
     public class UIManager : MonoSingleton<UIManager>
     {
         [SerializeField] private RectTransform inventoryPanel;
+        [SerializeField] private RectTransform shopkeeperPanel;
         [SerializeField] private float slideAnimationDuration = 0.6f;
         [SerializeField] private Ease slideAnimationEasing;
         
         private bool _isInventoryActive;
-        private bool _isSliding;
+        private bool _isInventorySliding;
+        private Tween _inventorySlideTween;
+        
+        private bool _isShopkeeperActive;
+        private bool _isShopkeeperSliding;
+        private Tween _shopkeeperSlideTween;
+
+        public void ToggleShopkeeper()
+        {
+            if (_isShopkeeperSliding) return;
+            _isShopkeeperActive = !_isShopkeeperActive;
+            SlideShopkeeperPanel();
+        }
+
+        public void DisableShopkeeper()
+        {
+            if (!_isShopkeeperActive) return;
+
+            if (_isShopkeeperSliding && _shopkeeperSlideTween != null)
+            {
+                _shopkeeperSlideTween.Complete(true);
+            }
+            ToggleShopkeeper();
+        }
 
         public void ToggleInventory()
         {
-            if (_isSliding) return;
+            if (_isInventorySliding) return;
             _isInventoryActive = !_isInventoryActive;
             SlideInventoryPanel();
+        }
+
+        private void SlideShopkeeperPanel()
+        {
+            if (_isShopkeeperSliding) return;
+            _isShopkeeperSliding = true;
+            var target = Mathf.Abs(shopkeeperPanel.anchoredPosition.x) * (_isShopkeeperActive ? -1 : 1);
+            _shopkeeperSlideTween = shopkeeperPanel.DOAnchorPosX(target, slideAnimationDuration).SetEase(slideAnimationEasing);
+            _shopkeeperSlideTween.OnComplete(() => _isShopkeeperSliding = false);
         }
         
         private void SlideInventoryPanel()
         {
-            if (_isSliding) return;
-            _isSliding = true;
+            if (_isInventorySliding) return;
+            _isInventorySliding = true;
             var target = Mathf.Abs(inventoryPanel.anchoredPosition.x) * (_isInventoryActive ? 1 : -1);
-            var tween = inventoryPanel.DOAnchorPosX(target, slideAnimationDuration).SetEase(slideAnimationEasing);
-            tween.OnComplete(() => _isSliding = false);
+            _inventorySlideTween = inventoryPanel.DOAnchorPosX(target, slideAnimationDuration).SetEase(slideAnimationEasing);
+            _inventorySlideTween.OnComplete(() => _isInventorySliding = false);
         }
     }
 }

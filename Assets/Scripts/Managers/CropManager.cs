@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using Gameplay;
+using Items;
 using UnityEngine;
 using Utilities;
 
@@ -38,6 +39,17 @@ namespace Managers
             var min = Instance.qualityPerTickRange.x;
             var max = Instance.qualityPerTickRange.y;
             return Random.Range(min, max);
+        }
+
+        public static void GenerateCollectableCrop(CropData currentCropData, int quality, Vector2 position)
+        {
+            var itemData = GlobalVariables.GetItemDataFromCropData(currentCropData, quality);
+            var collectable = GlobalVariables.SpawnGenericCollectable(position, OnCollect, itemData);
+        }
+
+        private static void OnCollect(ItemData itemData)
+        {
+            InventoryManager.ObtainCrop(itemData);
         }
     }
 }

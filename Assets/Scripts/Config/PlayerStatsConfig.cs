@@ -13,5 +13,7 @@ namespace Config
         public float sprintStaminaCostPerSecond = 10f;
         public float tiredStatusDuration = 2f;
         public float jumpForce = 10f;
+        public float magnetRange = 10f;
+        public float interactionRange = 2f;
     }
 }

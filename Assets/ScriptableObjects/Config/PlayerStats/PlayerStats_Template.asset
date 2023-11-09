@@ -20,3 +20,5 @@ MonoBehaviour:
   sprintStaminaCostPerSecond: 10
   tiredStatusDuration: 2
   jumpForce: 10
+  magnetRange: 2
+  interactionRange: 0.5

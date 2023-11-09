@@ -30,7 +30,7 @@ namespace Items
         public void LoadVisuals()
         {
             if (IsVisualsLoaded) return;
-            itemVisuals.Init(itemId);
+            itemVisuals.Init(itemId, itemType);
             IsVisualsLoaded = true;
         }
 
@@ -38,6 +38,11 @@ namespace Items
         {
             IsVisualsLoaded = false;
             LoadVisuals();
+        }
+
+        public void SetQuality(int quality)
+        {
+            itemCost += (itemCost * quality / 100);
         }
     }
 
@@ -49,9 +54,11 @@ namespace Items
 
         private string itemId;
 
-        public void Init(string itemId)
+        public void Init(string itemId, ItemType itemType)
         {
             this.itemId = itemId;
+            if (itemType == ItemType.Crop) return;
+            
             LoadAnimationData();
             if (icon == null)
             {
