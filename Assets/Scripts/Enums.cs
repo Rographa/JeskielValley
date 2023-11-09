@@ -32,4 +32,12 @@ public enum AnimationStates
     Walk,
     Run
 }
+
+[Serializable]
+public enum CropType
+{
+    None,
+    Potato,
+    Tomato
+}
     

@@ -83,7 +83,7 @@ namespace UI
 
         private void CheckLock()
         {
-            isLocked = InventoryManager.HasItem(_itemId);
+            isLocked = !InventoryManager.HasItem(_itemId);
 
             if (isLocked)
             {
@@ -103,8 +103,7 @@ namespace UI
             {
                 if (_itemData != null)
                 {
-                    icon = isLocked ? _itemData.itemVisuals.icon : LockedSprite;
-                    
+                    icon = isLocked ? LockedSprite : _itemData.itemVisuals.icon;
                 }
             }
 
@@ -113,7 +112,6 @@ namespace UI
             {
                 itemIconImage.sprite = icon;
             }
-
         }
 
         public void OnPointerClick(PointerEventData eventData)

@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ccab43b1ea74f3cbd19293db82ce0dc, type: 3}
+  m_Name: Potato
+  m_EditorClassIdentifier: 
+  cropType: 1
+  stages:
+  - ticksForNext: 3
+    cropSprite: {fileID: -884226199, guid: 51d29bc3fbcaae14380ee02c32f7e6d3, type: 3}
+  - ticksForNext: 6
+    cropSprite: {fileID: -148752394, guid: 51d29bc3fbcaae14380ee02c32f7e6d3, type: 3}
+  - ticksForNext: 8
+    cropSprite: {fileID: 283784971, guid: 51d29bc3fbcaae14380ee02c32f7e6d3, type: 3}
+  - ticksForNext: 8
+    cropSprite: {fileID: 1352703286, guid: 51d29bc3fbcaae14380ee02c32f7e6d3, type: 3}
+  - ticksForNext: 4
+    cropSprite: {fileID: -1901030207, guid: 51d29bc3fbcaae14380ee02c32f7e6d3, type: 3}
+  - ticksForNext: 3
+    cropSprite: {fileID: -2004564128, guid: 51d29bc3fbcaae14380ee02c32f7e6d3, type: 3}
+  finalStageSprite: {fileID: 584707350, guid: 51d29bc3fbcaae14380ee02c32f7e6d3, type: 3}
