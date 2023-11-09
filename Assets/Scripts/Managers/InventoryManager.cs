@@ -90,12 +90,12 @@ namespace Managers
 
         public static void Equip(ItemData itemData)
         {
-            GameManager.Instance.PlayerController.Equip(itemData);
+            GameManager.Equip(itemData);
         }
 
         public static void Unequip(ItemType itemType)
         {
-            GameManager.Instance.PlayerController.Unequip(itemType);
+            GameManager.Unequip(itemType);
         }
 
         public static ItemData GetEquippedItem(ItemType itemType)

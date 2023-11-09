@@ -11,6 +11,7 @@ namespace Managers
         [SerializeField] private RectTransform inventoryPanel;
         [SerializeField] private RectTransform shopkeeperPanel;
         [SerializeField] private TextMeshProUGUI coinText;
+        [SerializeField] private TextMeshProUGUI inventoryInputGuideText;
         [SerializeField] private float slideAnimationDuration = 0.6f;
         [SerializeField] private Ease slideAnimationEasing;
         
@@ -25,6 +26,8 @@ namespace Managers
         public override void Init()
         {
             base.Init();
+            var text = $"[{InputManager.GetMainKeyName(PlayerAction.Inventory)}] Inventory";
+            inventoryInputGuideText.SetText(text);
             UpdateCoinText(GameManager.CurrentCurrency);
         }
 

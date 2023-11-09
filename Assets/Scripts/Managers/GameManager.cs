@@ -17,9 +17,15 @@ namespace Managers
         public static Action<int> OnCropValueChanged;
         public static Action<string> OnItemObtained;
         public static Action<string> OnItemRemoved;
+        public static Action<ItemData> OnItemEquipped;
+        public static Action<ItemType> OnItemUnequipped;
 
         public static int CropValue => Instance._currentSaveData.totalCropValue;
         public static int CurrentCurrency => Instance._currentSaveData.currentCurrency;
+
+        public static string EquippedHair => Instance._currentSaveData.EquippedHair;
+        public static string EquippedOutfit => Instance._currentSaveData.EquippedOutfit;
+        public static string EquippedHat => Instance._currentSaveData.EquippedHat;
 
         [SerializeField] private bool autoSave = true;
         [SerializeField] private float autoSaveInterval = 60;
@@ -59,6 +65,8 @@ namespace Managers
             OnCropValueChanged += _currentSaveData.UpdateCropValue;
             OnItemObtained += _currentSaveData.ObtainItem;
             OnItemRemoved += _currentSaveData.RemoveItem;
+            OnItemEquipped += _currentSaveData.EquipItem;
+            OnItemUnequipped += _currentSaveData.UnequipItem;
             StartCoroutine(AutoSave());
         }
 
@@ -105,6 +113,35 @@ namespace Managers
             OnItemObtained?.Invoke(itemData.itemId);
             return true;
 
+        }
+
+        public static void Equip(ItemData itemData)
+        {
+            OnItemEquipped?.Invoke(itemData);
+            Instance.PlayerController.Equip(itemData);
+        }
+
+        public static void Unequip(ItemType itemType)
+        {
+            OnItemUnequipped?.Invoke(itemType);
+            Instance.PlayerController.Unequip(itemType);
+        }
+
+        public static string GetEquippedItem(ItemType itemType)
+        {
+            switch (itemType)
+            {
+                case ItemType.Hair:
+                    return EquippedHair;
+                case ItemType.Outfit:
+                    return EquippedOutfit;
+                case ItemType.Hat:
+                    return EquippedHat;
+                case ItemType.None:
+                case ItemType.Crop:
+                default:
+                    return string.Empty;
+            }
         }
     }
 }

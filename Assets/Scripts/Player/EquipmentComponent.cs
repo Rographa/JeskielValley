@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using Items;
+using Managers;
 using UnityEngine;
 using UnityEngine.Serialization;
 using Utilities;
@@ -40,12 +41,13 @@ namespace Player
         {
             _playerAnimation = playerAnimation;
             SetupInitialValues();
+            preEquippedItemId = GameManager.GetEquippedItem(itemType);
             if (!string.IsNullOrEmpty(preEquippedItemId))
             {
-                var preEquippedItem =
-                    Resources.Load<ItemData>(GlobalVariables.ItemDataResourcesEndpoint + preEquippedItemId);
+                var preEquippedItem = GlobalVariables.GetItemData(preEquippedItemId);
                 EquipItem(preEquippedItem);
             }
+            
             SetActive(true);
             _isInitialized = true;
         }
