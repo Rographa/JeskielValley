@@ -90,13 +90,18 @@ namespace UI
             
             isLocked = !InventoryManager.HasItem(itemId);
 
-            if (isLocked)
+            if (isLocked && !_isNone)
             {
                 pointerImageInteractionData.SetLocked();
             }
+            else
+            {
+                if (isHovered) pointerImageInteractionData.SetHover();
+                else pointerImageInteractionData.SetNormal();
+            }
         }
 
-        private void UpdateVisuals()
+        public void UpdateVisuals()
         {
             CheckLock();
             Sprite icon = null;
@@ -185,6 +190,17 @@ namespace UI
                     else pointerImageInteractionData.SetNormal(); 
                     break;
             }
+        }
+
+        public void Unlock()
+        {
+            if (_isNone) return;
+            
+            isLocked = false;
+            skipLockCheck = true;
+            UpdateVisuals();
+            if (isHovered) pointerImageInteractionData.SetHover();
+            else pointerImageInteractionData.SetNormal();
         }
     }
 

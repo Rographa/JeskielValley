@@ -34,6 +34,11 @@ namespace Utilities
             return clone;
         }
 
+        public static ItemData GetItemData(string itemId)
+        {
+            return Resources.Load<ItemData>(ItemDataResourcesEndpoint + itemId);
+        }
+
         private GenericCollectable InstantiateGenericCollectable(Vector2 position)
         {
             var prefab = Instantiate(genericCollectablePrefab, position, Quaternion.identity);

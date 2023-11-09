@@ -13,7 +13,8 @@ namespace Player
         private IInteractable _closestInteractable;
         private float _magnetRange;
         private float _interactRange;
-        
+
+        private List<ICollectable> _collectablesInCollectRange = new();
         private List<ICollectable> _collectablesInMagnetRange = new();
         public void Init(PlayerStatsConfig stats)
         {
@@ -25,6 +26,21 @@ namespace Player
         {
             HandleMagnet();
             HandleInteraction();
+            HandleCollectablesInRange();
+        }
+
+        private void HandleCollectablesInRange()
+        {
+            var list = new List<ICollectable>();
+            foreach (var collectable in _collectablesInCollectRange)
+            {
+                if (collectable.CanCollect())
+                {
+                    list.Add(collectable);
+                }
+            }
+            _collectablesInCollectRange.RemoveAll(c => list.Contains(c));
+            list.ForEach(c => c.Collect());
         }
 
         private Collider2D[] OverlapAll(float range, LayerMask mask)
@@ -35,7 +51,7 @@ namespace Player
         private void HandleInteraction()
         {
             var colliders = OverlapAll(_interactRange, ~0);
-            var interactables = colliders.Select(hit => hit.GetComponent<IInteractable>()).Where(interactable => interactable != null).ToList();
+            var interactables = colliders.Select(hit => hit.GetComponent<IInteractable>()).Where(interactable => interactable != null && interactable.CanInteract()).ToList();
 
             if (interactables.Count == 0)
             {
@@ -97,7 +113,20 @@ namespace Player
         private void OnTriggerEnter2D(Collider2D other)
         {
             var collectable = other.GetComponent<ICollectable>();
-            collectable?.Collect();
+
+            if (collectable == null) return;
+            
+            _collectablesInCollectRange.Add(collectable);
+        }
+
+        private void OnTriggerExit2D(Collider2D other)
+        {
+            var collectable = other.GetComponent<ICollectable>();
+
+            if (collectable == null) return;
+            
+            if (_collectablesInCollectRange.Contains(collectable))
+                _collectablesInCollectRange.Remove(collectable);
         }
 
         public IInteractable GetInteractable()

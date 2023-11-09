@@ -1,5 +1,6 @@
 ﻿using System;
 using DG.Tweening;
+using TMPro;
 using UnityEngine;
 using Utilities;
 
@@ -9,6 +10,7 @@ namespace Managers
     {
         [SerializeField] private RectTransform inventoryPanel;
         [SerializeField] private RectTransform shopkeeperPanel;
+        [SerializeField] private TextMeshProUGUI coinText;
         [SerializeField] private float slideAnimationDuration = 0.6f;
         [SerializeField] private Ease slideAnimationEasing;
         
@@ -19,6 +21,37 @@ namespace Managers
         private bool _isShopkeeperActive;
         private bool _isShopkeeperSliding;
         private Tween _shopkeeperSlideTween;
+
+        public override void Init()
+        {
+            base.Init();
+            UpdateCoinText(GameManager.CurrentCurrency);
+        }
+
+        private void OnEnable()
+        {
+            Subscribe();
+        }
+
+        private void OnDisable()
+        {
+            Unsubscribe();
+        }
+        
+        private void Subscribe()
+        {
+            GameManager.OnCurrencyChanged += UpdateCoinText;
+        }
+
+        private void Unsubscribe()
+        {
+            GameManager.OnCurrencyChanged -= UpdateCoinText;
+        }
+        
+        private void UpdateCoinText(int value)
+        {
+            coinText.SetText(value.ToString());
+        }
 
         public void ToggleShopkeeper()
         {

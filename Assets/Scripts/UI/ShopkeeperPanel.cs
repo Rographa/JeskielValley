@@ -37,9 +37,15 @@ namespace UI
         private void Subscribe()
         {
             ItemTypeSection.OnItemViewSelected += UpdateItemViewSelected;
-            GameManager.OnCurrencyChanged += UpdateCropValueText;
+            GameManager.OnCropValueChanged += UpdateCropValueText;
+            GameManager.OnCurrencyChanged += (amount) => CheckButtons();
             buyButton.onClick.AddListener(Buy);
             sellButton.onClick.AddListener(SellCrops);
+        }
+
+        private void CheckButtons()
+        {
+            buyButton.interactable = CanBuy();
         }
 
         private void UpdateCropValueText(int amount)
@@ -52,7 +58,8 @@ namespace UI
         private void Unsubscribe()
         {
             ItemTypeSection.OnItemViewSelected -= UpdateItemViewSelected;
-            GameManager.OnCurrencyChanged -= UpdateCropValueText;
+            GameManager.OnCropValueChanged -= UpdateCropValueText;
+            GameManager.OnCurrencyChanged -= (amount) => CheckButtons();
             buyButton.onClick.RemoveAllListeners();
             sellButton.onClick.RemoveAllListeners();
         }
@@ -81,13 +88,20 @@ namespace UI
         private void SellCrops()
         {
             GameManager.SellAllCrops();
+            UpdateCropValueText(0);
         }
 
         private void Buy()
         {
             if (_lastSelectedItemView == null) return;
-            
-            GameManager.TryBuyItem(_lastSelectedItemView.ItemData);
+
+            if (GameManager.TryBuyItem(_lastSelectedItemView.ItemData))
+            {
+                _lastSelectedItemView.SetObtained(true);
+                _lastSelectedItemView = null;
+                CheckButtons();
+                itemTypeSectionList.ForEach(i => i.CheckObtainedItems());
+            }
         }
 
         private void SetupItemTypeSections()

@@ -1,6 +1,7 @@
 using System;
 using Interfaces;
 using Managers;
+using UI;
 using UnityEngine;
 using Utilities;
 using Random = UnityEngine.Random;
@@ -60,6 +61,7 @@ namespace Gameplay
 
         public void Plant(CropType cropType)
         {
+            ResetCropPoint();
             var endpoint = GlobalVariables.CropDataResourcesEndpoint + Enum.GetName(typeof(CropType), cropType);
             _currentCropData = Instantiate(Resources.Load<CropData>(endpoint));
             _currentStageIndex = 0;
@@ -71,6 +73,7 @@ namespace Gameplay
 
         public void Interact()
         {
+            InteractableTarget.SetTarget(null);
             if (_isReady)
             {
                 Harvest();
@@ -88,11 +91,17 @@ namespace Gameplay
             var pos = cropSpriteRenderer.transform.position;
             CropManager.GenerateCollectableCrop(_currentCropData, _quality, pos);
 
+            ResetCropPoint();
+        }
+
+        private void ResetCropPoint()
+        {
             cropSpriteRenderer.sprite = null;
             _currentCropData = null;
             _currentStage = null;
             _currentStageIndex = 0;
             _progress = 0;
+            _quality = 0;
             _isActive = false;
             _isReady = false;
         }
@@ -100,16 +109,28 @@ namespace Gameplay
         public void OnInteractionFocusEnter()
         {
             Debug.Log($"Interaction Focus Entered: {gameObject.name}");
+            InteractableTarget.SetTarget(this);
         }
 
         public void OnInteractionFocusExit()
         {
             Debug.Log($"Interaction Focus Exited: {gameObject.name}");
+            InteractableTarget.TryDisable(this);
         }
 
         public Vector2 GetPosition()
         {
             return transform.position;
+        }
+
+        public string GetInteractionText()
+        {
+            return _isReady ? "Harvest" : "Plant";
+        }
+
+        public bool CanInteract()
+        {
+            return _isReady || !_isActive;
         }
     }
 }

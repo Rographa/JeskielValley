@@ -27,9 +27,9 @@ namespace PlayerSaveData
             obtainedItems.Add(itemId);
         }
 
-        public void CollectCrop(int value)
+        public void UpdateCropValue(int value)
         {
-            totalCropValue += value;
+            totalCropValue = value;
         }
 
         public void RemoveItem(string itemId)

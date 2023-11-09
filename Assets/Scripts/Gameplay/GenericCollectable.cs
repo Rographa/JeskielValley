@@ -75,6 +75,11 @@ namespace Gameplay
             SetActive(false);
         }
 
+        public bool CanCollect()
+        {
+            return _canCollect;
+        }
+
         private void SetActive(bool value)
         {
             Ease easing;

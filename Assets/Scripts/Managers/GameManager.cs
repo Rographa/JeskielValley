@@ -14,6 +14,7 @@ namespace Managers
         public PlayerController PlayerController { get; private set; }
         
         public static Action<int> OnCurrencyChanged;
+        public static Action<int> OnCropValueChanged;
         public static Action<string> OnItemObtained;
         public static Action<string> OnItemRemoved;
 
@@ -40,7 +41,7 @@ namespace Managers
             var list = new List<ItemData>();
             foreach (var item in _currentSaveData.obtainedItems)
             {
-                var itemData = Resources.Load<ItemData>(GlobalVariables.ItemDataResourcesEndpoint + item);
+                var itemData = GlobalVariables.GetItemData(item);
                 if (itemData != null)
                 {
                     list.Add(itemData);
@@ -55,6 +56,7 @@ namespace Managers
             SaveLoad.Load();
             _currentSaveData = SaveLoad.CurrentSaveData;
             OnCurrencyChanged += _currentSaveData.UpdateCurrency;
+            OnCropValueChanged += _currentSaveData.UpdateCropValue;
             OnItemObtained += _currentSaveData.ObtainItem;
             OnItemRemoved += _currentSaveData.RemoveItem;
             StartCoroutine(AutoSave());
@@ -72,7 +74,8 @@ namespace Managers
 
         public static void ObtainCrop(int value)
         {
-            Instance._currentSaveData.CollectCrop(value);
+            var finalValue = CropValue + value;
+            OnCropValueChanged?.Invoke(finalValue);
         }
 
         public static void AddCurrency(int amount)
@@ -90,18 +93,18 @@ namespace Managers
         public static void SellAllCrops()
         {
             AddCurrency(CropValue);
-            Instance._currentSaveData.ResetCropValue();
+            OnCropValueChanged?.Invoke(0);
         }
 
-        public static void TryBuyItem(ItemData itemData)
+        public static bool TryBuyItem(ItemData itemData)
         {
-            if (itemData == null) return;
-            
-            if (CurrentCurrency >= itemData.itemCost)
-            {
-                SpendCurrency(itemData.itemCost);
-                OnItemObtained?.Invoke(itemData.itemId);
-            }
+            if (itemData == null) return false;
+            if (CurrentCurrency < itemData.itemCost) return false;
+
+            SpendCurrency(itemData.itemCost);
+            OnItemObtained?.Invoke(itemData.itemId);
+            return true;
+
         }
     }
 }

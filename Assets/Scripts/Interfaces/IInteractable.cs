@@ -9,5 +9,8 @@ namespace Interfaces
         public void OnInteractionFocusExit();
 
         public Vector2 GetPosition();
+        public string GetInteractionText();
+
+        public bool CanInteract();
     }
 }

@@ -12,7 +12,7 @@ TagManager:
   - Water
   - UI
   - Collectable
-  - 
+  - CameraConfiner
   - 
   - 
   - 
@@ -61,4 +61,7 @@ TagManager:
     locked: 0
   - name: Collectable
     uniqueID: 1079159619
+    locked: 0
+  - name: Overlay
+    uniqueID: 2984665331
     locked: 0

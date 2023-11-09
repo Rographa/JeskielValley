@@ -56,5 +56,10 @@ namespace Managers
                 OnInput?.Invoke(input.playerAction);
             }
         }
+
+        public static string GetMainKeyName(PlayerAction action)
+        {
+            return Instance.inputConfig.userInputs.Find(i => i.playerAction == action).mainKey.ToString();
+        }
     }
 }

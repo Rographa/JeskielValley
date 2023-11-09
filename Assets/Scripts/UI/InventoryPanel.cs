@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using Managers;
 using UnityEngine;
+using Utilities;
 
 namespace UI
 {
@@ -11,6 +13,31 @@ namespace UI
         private void Start()
         {
             SetupItemTypeSections();
+        }
+
+        private void OnEnable()
+        {
+            Subscribe();
+        }
+
+        private void OnDisable()
+        {
+            Unsubscribe();
+        }
+
+        private void Subscribe()
+        {
+            GameManager.OnItemObtained += OnItemObtained;
+        }
+
+        private void Unsubscribe()
+        {
+            GameManager.OnItemObtained -= OnItemObtained;
+        }
+        
+        private void OnItemObtained(string itemId)
+        {
+            itemTypeSectionList.ForEach(i => i.UnlockItem(itemId));
         }
 
         private void SetupItemTypeSections()

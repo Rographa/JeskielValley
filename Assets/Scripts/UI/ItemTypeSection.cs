@@ -17,6 +17,8 @@ namespace UI
         
         private static List<ItemData> _allItems;
         private List<ItemData> _loadedItems;
+
+        public ItemType ItemType => itemType;
         
         [SerializeField] private ItemType itemType;
         [SerializeField] private bool isShop;
@@ -53,16 +55,18 @@ namespace UI
             SetupText();
         }
 
-        private void CheckEquippedItems()
+        public void CheckEquippedItems()
         {
             var item = InventoryManager.GetEquippedItem(itemType);
             foreach (var itemView in itemViewList)
             {
+                itemView.skipLockCheck = false;
+                itemView.UpdateVisuals();
                 itemView.SetSelected(itemView.IsItem(item));
             }
         }
         
-        private void CheckObtainedItems()
+        public void CheckObtainedItems()
         {
             foreach (var itemView in itemViewList)
             {
@@ -159,16 +163,6 @@ namespace UI
         private void OnShopkeeperItemViewSelected(ItemView itemView, ItemData itemData)
         {
             OnItemViewSelected?.Invoke(itemView, itemData);
-            if (itemData == null)
-            {
-                InventoryManager.Unequip(itemType);
-            }
-            else
-            {
-                InventoryManager.Equip(itemData);
-            }
-
-            CheckEquippedItems();
         }
 
         [CanBeNull]
@@ -184,6 +178,15 @@ namespace UI
             }
 
             CheckEquippedItems();
+        }
+
+        public void UnlockItem(string itemId)
+        {
+            foreach (var itemView in itemViewList)
+            {
+                if (itemView.itemId != itemId) continue;
+                itemView.Unlock();
+            }
         }
     }
 }

@@ -30,6 +30,7 @@ namespace Managers
                 _obtainedItems = GameManager.Instance.GetObtainedItems();
                 return _obtainedItems;
             }
+            set => _obtainedItems = value;
         }
 
         public static ItemData EquippedHair => GameManager.Instance.PlayerController.EquippedHair;
@@ -56,11 +57,19 @@ namespace Managers
         private void Subscribe()
         {
             InputManager.OnInputDown += CheckInput;
+            GameManager.OnItemObtained += UpdateObtainedItems;
         }
-        
+
+        private void UpdateObtainedItems(string itemId)
+        {
+            _obtainedItems.Add(GlobalVariables.GetItemData(itemId));
+            ObtainedItems = _obtainedItems;
+        }
+
         private void Unsubscribe()
         {
             InputManager.OnInputDown -= CheckInput;
+            GameManager.OnItemObtained -= UpdateObtainedItems;
         }
 
         private void CheckInput(PlayerAction action)
