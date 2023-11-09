@@ -12,7 +12,8 @@ public enum PlayerAction
     Sprint,
     Interact,
     Jump,
-    Inventory
+    Inventory,
+    MainMenu
 }
 
 [Serializable]

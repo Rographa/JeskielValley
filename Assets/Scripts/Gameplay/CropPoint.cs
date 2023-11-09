@@ -108,13 +108,11 @@ namespace Gameplay
 
         public void OnInteractionFocusEnter()
         {
-            Debug.Log($"Interaction Focus Entered: {gameObject.name}");
             InteractableTarget.SetTarget(this);
         }
 
         public void OnInteractionFocusExit()
         {
-            Debug.Log($"Interaction Focus Exited: {gameObject.name}");
             InteractableTarget.TryDisable(this);
         }
 

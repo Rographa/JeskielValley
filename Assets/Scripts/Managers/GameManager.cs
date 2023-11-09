@@ -6,6 +6,7 @@ using Player;
 using Utilities;
 using PlayerSaveData;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Managers
 {
@@ -30,6 +31,7 @@ namespace Managers
         [SerializeField] private bool autoSave = true;
         [SerializeField] private float autoSaveInterval = 60;
         private SaveData _currentSaveData;
+        private bool _isReturningToMenu;
         public override void Init()
         {
             base.Init();
@@ -37,9 +39,35 @@ namespace Managers
             PlayerController = FindObjectOfType<PlayerController>();
         }
 
+        private void OnEnable()
+        {
+            Subscribe();
+        }
+        
         private void OnDisable()
         {
+            Unsubscribe();
             SaveLoad.Save(_currentSaveData);
+        }
+        
+        private void Subscribe()
+        {
+            InputManager.OnInputDown += CheckInput;
+        }
+
+        private void Unsubscribe()
+        {
+            InputManager.OnInputDown -= CheckInput;
+        }
+        
+        private void CheckInput(PlayerAction action)
+        {
+            if (action != PlayerAction.MainMenu) return;
+            
+            if (_isReturningToMenu) return;
+            _isReturningToMenu = true;
+            SaveLoad.Save(_currentSaveData);
+            SceneManager.LoadScene(MenuManager.MenuScene);
         }
 
         public List<ItemData> GetObtainedItems()

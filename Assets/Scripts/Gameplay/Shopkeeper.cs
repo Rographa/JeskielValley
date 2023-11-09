@@ -14,13 +14,11 @@ namespace Gameplay
 
         public void OnInteractionFocusEnter()
         {
-            Debug.Log("Shopkeeper enabled.");
             InteractableTarget.SetTarget(this);
         }
 
         public void OnInteractionFocusExit()
         {
-            Debug.Log("Shopkeeper disabled.");
             UIManager.Instance.DisableShopkeeper();
             InteractableTarget.TryDisable(this);
         }

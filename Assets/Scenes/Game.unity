@@ -3249,8 +3249,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f7241f49d4d54879874fa71b626a4504, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tickIntervalInSeconds: 0.2
-  qualityPerTickRange: {x: 0, y: 10}
+  tickIntervalInSeconds: 0.5
+  qualityPerTickRange: {x: 1, y: 10}
   cropPoints:
   - {fileID: 1415428715}
   - {fileID: 149776636}
