@@ -31,3 +31,6 @@ MonoBehaviour:
   - playerAction: 6
     mainKey: 101
     alternativeKey: 324
+  - playerAction: 8
+    mainKey: 9
+    alternativeKey: 105

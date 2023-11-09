@@ -9,9 +9,9 @@ namespace Managers
 {
     public class InputManager : MonoSingleton<InputManager>
     {
-        public static event Action<Enums.PlayerAction> OnInputDown;
-        public static event Action<Enums.PlayerAction> OnInputUp;
-        public static event Action<Enums.PlayerAction> OnInput;
+        public static event Action<PlayerAction> OnInputDown;
+        public static event Action<PlayerAction> OnInputUp;
+        public static event Action<PlayerAction> OnInput;
 
         [SerializeField] private UserInputConfig inputConfig;
         [SerializeField] private bool autoInit = true;

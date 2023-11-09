@@ -16,23 +16,5 @@ MonoBehaviour:
   itemType: 1
   itemVisuals:
     icon: {fileID: 0}
-    animationData:
-    - animationState: 0
-      downKeyframes: 
-      upKeyframes: 
-      rightKeyframes: 
-      leftKeyframes: 
-      allSprites: []
-    - animationState: 0
-      downKeyframes: 
-      upKeyframes: 
-      rightKeyframes: 
-      leftKeyframes: 
-      allSprites: []
-    - animationState: 0
-      downKeyframes: 
-      upKeyframes: 
-      rightKeyframes: 
-      leftKeyframes: 
-      allSprites: []
+    animationData: []
   itemCost: 0

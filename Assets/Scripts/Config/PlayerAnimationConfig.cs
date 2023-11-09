@@ -9,16 +9,15 @@ namespace Config
     {
         public List<AnimationData> playerAnimationData = new();
 
-        public AnimationData GetStateData(Enums.AnimationStates state)
+        public AnimationData GetStateData(AnimationStates state)
         {
             return playerAnimationData.Find(p => p.animationState == state);
         }
         
-        public int GetIndex(Enums.AnimationStates state, Sprite currentSprite, Vector2 currentDirection)
+        public int GetIndex(AnimationStates state, Sprite currentSprite, Vector2 currentDirection)
         {
             var stateData = GetStateData(state);
             var sprites = stateData.GetSpritesByDirection(currentDirection);
-            //return sprites.FindIndex(s => s.name == currentSprite.name);
             return sprites.IndexOf(currentSprite);
         }
 
@@ -28,7 +27,7 @@ namespace Config
     [Serializable]
     public class AnimationData
     {
-        public Enums.AnimationStates animationState;
+        public AnimationStates animationState;
         public List<Sprite> downSprites = new();
         public List<Sprite> upSprites = new();
         public List<Sprite> rightSprites = new();
@@ -36,7 +35,7 @@ namespace Config
         
         public List<Sprite> GetSpritesByDirection(Vector2 direction)
         {
-            if (direction.y <= -1) return downSprites;
+            if (direction == Vector2.zero || direction.y <= -1) return downSprites;
 
             return direction.x switch
             {

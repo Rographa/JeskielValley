@@ -9,8 +9,8 @@ namespace Player
 {
     public class PlayerAnimation : MonoBehaviour
     {
-        public event Action<Enums.AnimationStates> OnAnimationStateChanged;
-        public event Action<Enums.AnimationStates, int, Vector2> OnSpriteChanged;
+        public event Action<AnimationStates> OnAnimationStateChanged;
+        public event Action<AnimationStates, int, Vector2> OnSpriteChanged;
 
         [SerializeField] private Animator anim;
         [SerializeField] private SpriteRenderer spriteRenderer;
@@ -22,7 +22,7 @@ namespace Player
         private string _currentStateName;
         private Sprite _lastSprite;
 
-        private Enums.AnimationStates CurrentState => Enum.Parse<Enums.AnimationStates>(_currentStateName);
+        private AnimationStates CurrentState => Enum.Parse<AnimationStates>(_currentStateName);
         private Vector2 CurrentDirection => new Vector2(anim.GetFloat(DirX), anim.GetFloat(DirY));
         private static int DirX => Animator.StringToHash("DirX");
         private static int DirY => Animator.StringToHash("DirY");
@@ -36,8 +36,12 @@ namespace Player
             _playerController = controller;
             Subscribe();
             SetupEquipmentComponents();
-            //StartCoroutine(CheckAnimationState());
             StartCoroutine(WaitForSpriteChanges());
+        }
+
+        public EquipmentComponent GetEquipmentComponent(ItemType itemType)
+        {
+            return _equipmentComponents.Find(i => i.itemType == itemType);
         }
 
         private void SetupEquipmentComponents()
@@ -50,7 +54,7 @@ namespace Player
 
             foreach (var equipmentComponent in _equipmentComponents)
             {
-                equipmentComponent.Init();
+                equipmentComponent.Init(this);
             }
         }
 
@@ -120,7 +124,7 @@ namespace Player
         {
             animationStateNames ??= new();
             if (animationStateNames.Count > 0) return;
-            foreach (var stateName in Enum.GetNames(typeof(Enums.AnimationStates)))
+            foreach (var stateName in Enum.GetNames(typeof(AnimationStates)))
             {
                 if (stateName == "None") continue;
                 animationStateNames.Add(stateName);
@@ -190,6 +194,21 @@ namespace Player
                     anim.SetTrigger(parameterHash);
                     break;
             }
+        }
+
+        private void SetEquipmentComponentActive(List<ItemType> list, bool value)
+        {
+            list.ForEach(i => GetEquipmentComponent(i).SetActive(value));
+        }
+
+        public void HideEquipments(List<ItemType> itemsToHide)
+        {
+            SetEquipmentComponentActive(itemsToHide, false);
+        }
+
+        public void ShowEquipments(List<ItemType> itemsToShow)
+        {
+            SetEquipmentComponentActive(itemsToShow, true);
         }
     }
 }

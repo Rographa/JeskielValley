@@ -13,7 +13,7 @@ namespace Config
     [Serializable]
     public class UserInput
     {
-        public Enums.PlayerAction playerAction = Enums.PlayerAction.None;
+        public PlayerAction playerAction = PlayerAction.None;
         public KeyCode mainKey = KeyCode.None;
         public KeyCode alternativeKey = KeyCode.None;
     }
