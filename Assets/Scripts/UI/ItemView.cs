@@ -68,6 +68,7 @@ namespace UI
         public void SetNone()
         {
             _isNone = true;
+            skipLockCheck = true;
             UpdateVisuals();
         }
 
@@ -88,9 +89,9 @@ namespace UI
         {
             if (skipLockCheck) return;
             
-            isLocked = !InventoryManager.HasItem(itemId);
+            isLocked = !InventoryManager.HasItem(itemId) && !_isNone;
 
-            if (isLocked && !_isNone)
+            if (isLocked)
             {
                 pointerImageInteractionData.SetLocked();
             }
@@ -179,6 +180,8 @@ namespace UI
 
         public void SetObtained(bool hasItem)
         {
+            if (_isNone) return;
+            
             isLocked = hasItem;
             switch (hasItem)
             {
