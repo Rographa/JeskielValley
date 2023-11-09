@@ -26,7 +26,7 @@ namespace PlayerSaveData
 
         public static void Load()
         {
-            if (File.Exists(SaveEndpoint))
+            if (HasSaveData())
             {
                 var binaryFormatter = new BinaryFormatter();
                 var file = File.Open(SaveEndpoint, FileMode.Open);
@@ -37,6 +37,18 @@ namespace PlayerSaveData
             {
                 CurrentSaveData = new();
             }
+        }
+
+        public static void DeleteSave()
+        {
+            if (!HasSaveData()) return;
+            
+            File.Delete(SaveEndpoint);
+        }
+
+        public static bool HasSaveData()
+        {
+            return File.Exists(SaveEndpoint);
         }
     }
 }
